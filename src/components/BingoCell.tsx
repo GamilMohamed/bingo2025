@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PencilIcon, CheckIcon, PlusIcon, MinusIcon } from "lucide-react";
 import { Card } from "./ui/card";
 import { useSession } from "next-auth/react";
 import type { FC } from "react";
-import { Cell } from "@prisma/client";
+// import { Cell } from "@prisma/client";
 
 interface BingoCellProps {
   index: number;
@@ -58,15 +58,15 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     }
   };
 
-  const debounce = <T extends (...args: Cell[]) => void>(func: T, wait: number) => {
-      let timeout: NodeJS.Timeout;
-      return (...args: Parameters<T>) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-      };
-    };
+  // const debounce = <T extends (...args: Cell[]) => void>(func: T, wait: number) => {
+  //     let timeout: NodeJS.Timeout;
+  //     return (...args: Parameters<T>) => {
+  //       clearTimeout(timeout);
+  //       timeout = setTimeout(() => func(...args), wait);
+  //     };
+  //   };
 
-  const debouncedUpdate = debounce(updateCell, 500);
+  // const debouncedUpdate = debounce(updateCell, 500);
 
   // useEffect(() => {
   //   if (cell.text !== goal || cell.max !== max || cell.actual !== count) {
