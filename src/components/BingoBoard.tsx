@@ -1,13 +1,14 @@
 "use server";
 import type React from "react"
 import { BingoCell } from "./BingoCell"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { getServerSession } from "next-auth";
 import { Button } from "./ui/button";
 import { LogOutIcon } from "lucide-react";
-import { User } from "@prisma/client";
+import { BingoWithCells } from "@/lib/prisma";
 
-export async function BingoBoard({ user, bingo }: { user: User, bingo: any }) {
+
+export async function BingoBoard({ bingo }: { bingo: BingoWithCells }) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return null;

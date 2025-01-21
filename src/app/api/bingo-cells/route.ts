@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../auth/[...nextauth]/auth";
 
 export async function PUT(request: Request) {
   const session = await getServerSession(authOptions);
@@ -25,6 +25,6 @@ export async function PUT(request: Request) {
     
     return Response.json(updatedCell);
   } catch (error) {
-    return new Response("Error updating cell", { status: 500 });
+    return new Response("Error updating cell" + (error instanceof Error ? error.message : ""), { status: 500 });
   }
 }

@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "./api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { BingoBoard } from "@/components/BingoBoard";
@@ -48,7 +48,7 @@ export default async function Home() {
 
   return (
     <main>
-      <BingoBoard user={session.user} bingo={bingo} />
+      <BingoBoard bingo={bingo} />
     </main>
   );
 }

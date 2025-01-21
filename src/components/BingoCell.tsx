@@ -1,12 +1,13 @@
-// components/BingoCell.tsx
 "use client";
-import type React from "react";
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PencilIcon, CheckIcon, PlusIcon, MinusIcon } from "lucide-react";
 import { Card } from "./ui/card";
 import { useSession } from "next-auth/react";
+import type { FC } from "react";
+import { Cell } from "@prisma/client";
 
 interface BingoCellProps {
   index: number;
@@ -19,11 +20,7 @@ interface BingoCellProps {
   };
 }
 
-export const BingoCell: React.FC<BingoCellProps> = ({
-  index,
-  id,
-  cell,
-}) => {
+export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
   const { data: session } = useSession();
   const [goal, setGoal] = useState(cell.text);
   const [count, setCount] = useState(cell.actual);
@@ -36,10 +33,10 @@ export const BingoCell: React.FC<BingoCellProps> = ({
     
     setIsSaving(true);
     try {
-      const response = await fetch('/api/bingo-cells', {
-        method: 'PUT',
+      const response = await fetch("/api/bingo-cells", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           id,
@@ -52,30 +49,28 @@ export const BingoCell: React.FC<BingoCellProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update cell');
+        throw new Error("Failed to update cell");
       }
     } catch (error) {
-      console.error('Error updating cell:', error);
+      console.error("Error updating cell:", error);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Debounce helper
-  const debounce = (func: Function, wait: number) => {
-    let timeout: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
+  const debounce = <T extends (...args: Cell[]) => void>(func: T, wait: number) => {
+      let timeout: NodeJS.Timeout;
+      return (...args: Parameters<T>) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
     };
-  };
 
-  // Debounced update function
   const debouncedUpdate = debounce(updateCell, 500);
 
   useEffect(() => {
     if (cell.text !== goal || cell.max !== max || cell.actual !== count) {
-      debouncedUpdate({
+      void debouncedUpdate({
         text: goal,
         max,
         actual: count,
@@ -84,29 +79,26 @@ export const BingoCell: React.FC<BingoCellProps> = ({
   }, [goal, max, count, cell.text, cell.max, cell.actual, debouncedUpdate]);
 
   const increment = () => {
-    // if (count < max) {
-      const newCount = count + 1;
-      setCount(newCount);
-      updateCell({ actual: newCount });
-    // }
+    const newCount = count + 1;
+    setCount(newCount);
+    void updateCell({ actual: newCount });
   };
 
   const decrement = () => {
     if (count > 0) {
       const newCount = count - 1;
       setCount(newCount);
-      updateCell({ actual: newCount });
+      void updateCell({ actual: newCount });
     }
   };
 
   const handleEditComplete = () => {
     setIsEditMode(false);
-    updateCell({
+    void updateCell({
       text: goal,
       max,
       actual: count,
     });
-    setIsEditMode(false);
   };
 
   const isComplete = count === max;
@@ -117,7 +109,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
         isComplete ? "bg-[#9BC6B9]" : "bg-white"
       } ${isSaving ? "opacity-70" : ""}`}
     >
-      <div className="flex-grow mb-2 justify-center items-center flex bg-redx-400">
+      <div className="flex-grow mb-2 justify-center items-center flex">
         {isEditMode ? (
           <Input
             type="text"
@@ -128,7 +120,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
             aria-label={`Goal for cell ${index + 1}`}
           />
         ) : (
-          <p className="overflow-auto h-full bg-bluxe-300 flex justify-center items-center w-full">
+          <p className="overflow-auto h-full flex justify-center items-center w-full">
             {goal}
           </p>
         )}
@@ -140,7 +132,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
             <Input
               type="number"
               value={count}
-              onChange={(e) => setCount(Number.parseInt(e.target.value) || 0)}
+              onChange={(e) => setCount(Number(e.target.value) || 0)}
               className="w-16 text-center"
               min="0"
               max={max}
@@ -150,7 +142,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
             <Input
               type="number"
               value={max}
-              onChange={(e) => setMax(Number.parseInt(e.target.value) || 1)}
+              onChange={(e) => setMax(Number(e.target.value) || 1)}
               className="w-16 text-center"
               min="1"
               aria-label={`Maximum value for cell ${index + 1}`}
@@ -162,13 +154,13 @@ export const BingoCell: React.FC<BingoCellProps> = ({
               ""
             ) : (
               <>
-                {max == 1 ? (
+                {max === 1 ? (
                   <Button
                     onClick={increment}
                     disabled={isComplete || isSaving}
                     size="sm"
                     variant="outline"
-                    className={`${isComplete ? "none" : "bg-red-4x00 w-fit"}`}
+                    className={`${isComplete ? "none" : "w-fit"}`}
                   >
                     {!isComplete ? "✓" : ""}
                   </Button>
