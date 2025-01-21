@@ -1,46 +1,121 @@
+// components/BingoCell.tsx
 "use client";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PencilIcon, CheckIcon, PlusIcon, MinusIcon } from "lucide-react";
 import { Card } from "./ui/card";
+import { useSession } from "next-auth/react";
 
 interface BingoCellProps {
   index: number;
-  initialGoal?: string;
-  initialMax?: number;
+  id: number;
+  cell: {
+    text: string;
+    max: number;
+    actual: number;
+    checked: boolean;
+  };
 }
 
 export const BingoCell: React.FC<BingoCellProps> = ({
   index,
-  initialGoal = "",
-  initialMax = 1,
+  id,
+  cell,
 }) => {
-  const [goal, setGoal] = useState(initialGoal);
-  const [count, setCount] = useState(0);
-  const [max, setMax] = useState(initialMax);
+  const { data: session } = useSession();
+  const [goal, setGoal] = useState(cell.text);
+  const [count, setCount] = useState(cell.actual);
+  const [max, setMax] = useState(cell.max);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const updateCell = async (updates: Partial<typeof cell>) => {
+    if (!session) return;
+    
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/bingo-cells', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          text: goal,
+          max,
+          actual: count,
+          checked: count === max,
+          ...updates
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update cell');
+      }
+    } catch (error) {
+      console.error('Error updating cell:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Debounce helper
+  const debounce = (func: Function, wait: number) => {
+    let timeout: NodeJS.Timeout;
+    return (...args: any[]) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  // Debounced update function
+  const debouncedUpdate = debounce(updateCell, 500);
+
+  useEffect(() => {
+    if (cell.text !== goal || cell.max !== max || cell.actual !== count) {
+      debouncedUpdate({
+        text: goal,
+        max,
+        actual: count,
+      });
+    }
+  }, [goal, max, count, cell.text, cell.max, cell.actual, debouncedUpdate]);
 
   const increment = () => {
-    if (count < max) {
-      setCount(count + 1);
-    }
+    // if (count < max) {
+      const newCount = count + 1;
+      setCount(newCount);
+      updateCell({ actual: newCount });
+    // }
   };
 
   const decrement = () => {
     if (count > 0) {
-      setCount(count - 1);
+      const newCount = count - 1;
+      setCount(newCount);
+      updateCell({ actual: newCount });
     }
+  };
+
+  const handleEditComplete = () => {
+    setIsEditMode(false);
+    updateCell({
+      text: goal,
+      max,
+      actual: count,
+    });
+    setIsEditMode(false);
   };
 
   const isComplete = count === max;
 
   return (
     <Card
-      className={`aspect-square p-4 relative flex flex-col ${
+      className={`aspect-square p-4 relative flex flex-col min-w-40 ${
         isComplete ? "bg-[#9BC6B9]" : "bg-white"
-      }`}
+      } ${isSaving ? "opacity-70" : ""}`}
     >
       <div className="flex-grow mb-2 justify-center items-center flex bg-redx-400">
         {isEditMode ? (
@@ -90,10 +165,10 @@ export const BingoCell: React.FC<BingoCellProps> = ({
                 {max == 1 ? (
                   <Button
                     onClick={increment}
-                    disabled={isComplete}
+                    disabled={isComplete || isSaving}
                     size="sm"
                     variant="outline"
-                    className={`${isComplete ? "none" : "bg-redx-400 w-1/2"}`}
+                    className={`${isComplete ? "none" : "bg-red-4x00 w-fit"}`}
                   >
                     {!isComplete ? "✓" : ""}
                   </Button>
@@ -105,7 +180,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
                     <div>
                       <Button
                         onClick={decrement}
-                        disabled={count === 0}
+                        disabled={count === 0 || isSaving}
                         size="sm"
                         variant="outline"
                         className="mr-2"
@@ -114,7 +189,7 @@ export const BingoCell: React.FC<BingoCellProps> = ({
                       </Button>
                       <Button
                         onClick={increment}
-                        disabled={isComplete}
+                        disabled={isComplete || isSaving}
                         size="sm"
                         variant="outline"
                       >
@@ -130,17 +205,22 @@ export const BingoCell: React.FC<BingoCellProps> = ({
       </div>
 
       <Button
-        onClick={() => setIsEditMode(!isEditMode)}
+        onClick={() => {
+          if (isEditMode) {
+            handleEditComplete();
+          } else {
+            setIsEditMode(true);
+          }
+        }}
         variant={isEditMode ? "default" : "outline"}
-        className=" aspect-square mt-auto"
+        className="aspect-square w-fit flex justify-center items-center"
+        disabled={isSaving}
         aria-label={isEditMode ? "Save changes" : "Edit cell"}
       >
         {isEditMode ? (
-          <>
-            <CheckIcon className="h-4 w-4 mr-2" />
-          </>
+          <CheckIcon className="h-4 w-4" />
         ) : (
-            <PencilIcon className="h-4 w-4 mr-2" />
+          <PencilIcon className="h-4 w-4" />
         )}
       </Button>
     </Card>

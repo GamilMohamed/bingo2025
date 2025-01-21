@@ -12,7 +12,7 @@
   src: url("/Gliker-BlackExtraExpanded.ttf") format('truetype');
 }
 
-h1, h2 {
+h1, h2, h4 {
   font-family: 'Gliker Bold';
 }
 
