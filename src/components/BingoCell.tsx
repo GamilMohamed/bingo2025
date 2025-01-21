@@ -68,15 +68,15 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
   const debouncedUpdate = debounce(updateCell, 500);
 
-  useEffect(() => {
-    if (cell.text !== goal || cell.max !== max || cell.actual !== count) {
-      void debouncedUpdate({
-        text: goal,
-        max,
-        actual: count,
-      });
-    }
-  }, [goal, max, count, cell.text, cell.max, cell.actual, debouncedUpdate]);
+  // useEffect(() => {
+  //   if (cell.text !== goal || cell.max !== max || cell.actual !== count) {
+  //     void debouncedUpdate({
+  //       text: goal,
+  //       max,
+  //       actual: count,
+  //     });
+  //   }
+  // }, [goal, max, count, cell.text, cell.max, cell.actual, debouncedUpdate]);
 
   const increment = () => {
     const newCount = count + 1;
