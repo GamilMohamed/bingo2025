@@ -1,82 +1,32 @@
-"use client";
-
-import { useState } from "react";
+"use client"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PencilIcon, CheckIcon, PlusIcon, MinusIcon } from "lucide-react";
-import { Card } from "./ui/card";
-import { useSession } from "next-auth/react";
+import { PencilIcon, CheckIcon, PlusIcon, MinusIcon, Loader2, StickyNoteIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { useBingoCell } from "../hooks/useBingoCell";
+import { NotesDialog } from "./NotesDialog";
+import type { BingoCellProps } from "../types";
 import type { FC } from "react";
-// import { Cell } from "@prisma/client";
-
-interface BingoCellProps {
-  index: number;
-  id: number;
-  cell: {
-    text: string;
-    max: number;
-    actual: number;
-    checked: boolean;
-  };
-}
+import { Textarea } from "./ui/textarea";
 
 export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
-  const { data: session } = useSession();
-  const [goal, setGoal] = useState(cell.text);
-  const [count, setCount] = useState(cell.actual);
-  const [max, setMax] = useState(cell.max);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const updateCell = async (updates: Partial<typeof cell>) => {
-    if (!session) return;
-    
-    setIsSaving(true);
-    try {
-      const response = await fetch("/api/bingo-cells", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          text: goal,
-          max,
-          actual: count,
-          checked: count === max,
-          ...updates
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update cell");
-      }
-    } catch (error) {
-      console.error("Error updating cell:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // const debounce = <T extends (...args: Cell[]) => void>(func: T, wait: number) => {
-  //     let timeout: NodeJS.Timeout;
-  //     return (...args: Parameters<T>) => {
-  //       clearTimeout(timeout);
-  //       timeout = setTimeout(() => func(...args), wait);
-  //     };
-  //   };
-
-  // const debouncedUpdate = debounce(updateCell, 500);
-
-  // useEffect(() => {
-  //   if (cell.text !== goal || cell.max !== max || cell.actual !== count) {
-  //     void debouncedUpdate({
-  //       text: goal,
-  //       max,
-  //       actual: count,
-  //     });
-  //   }
-  // }, [goal, max, count, cell.text, cell.max, cell.actual, debouncedUpdate]);
+  const {
+    goal,
+    setGoal,
+    count,
+    setCount,
+    max,
+    setMax,
+    notes,
+    setNotes,
+    isEditMode,
+    setIsEditMode,
+    isNotesOpen,
+    setIsNotesOpen,
+    isSaving,
+    updateCell,
+    isComplete
+  } = useBingoCell(cell, id);
 
   const increment = () => {
     const newCount = count + 1;
@@ -101,7 +51,10 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     });
   };
 
-  const isComplete = count === max;
+  const handleNotesUpdate = (newNotes: string) => {
+    setNotes(newNotes);
+    void updateCell({ notes: newNotes });
+  };
 
   return (
     <Card
@@ -111,14 +64,21 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     >
       <div className="flex-grow mb-2 justify-center items-center flex">
         {isEditMode ? (
-          <Input
-            type="text"
+          <Textarea
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            placeholder="Enter goal"
+            placeholder="écrire un objectif"
             className="w-full mb-2 h-full"
             aria-label={`Goal for cell ${index + 1}`}
           />
+          // <Input
+          //   type="text"
+          //   value={goal}
+          //   onChange={(e) => setGoal(e.target.value)}
+          //   placeholder="Enter goal"
+          //   className="w-full mb-2 h-full"
+          //   aria-label={`Goal for cell ${index + 1}`}
+          // />
         ) : (
           <p className="overflow-auto h-full flex justify-center items-center w-full">
             {goal}
@@ -162,7 +122,13 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
                     variant="outline"
                     className={`${isComplete ? "none" : "w-fit"}`}
                   >
-                    {!isComplete ? "✓" : ""}
+                    {isSaving ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : !isComplete ? (
+                      "✓"
+                    ) : (
+                      ""
+                    )}
                   </Button>
                 ) : (
                   <>
@@ -177,7 +143,11 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
                         variant="outline"
                         className="mr-2"
                       >
-                        <MinusIcon className="h-4 w-4" />
+                        {isSaving ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <MinusIcon className="h-4 w-4" />
+                        )}
                       </Button>
                       <Button
                         onClick={increment}
@@ -185,7 +155,11 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
                         size="sm"
                         variant="outline"
                       >
-                        <PlusIcon className="h-4 w-4" />
+                        {isSaving ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <PlusIcon className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </>
@@ -196,25 +170,47 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         )}
       </div>
 
-      <Button
-        onClick={() => {
-          if (isEditMode) {
-            handleEditComplete();
-          } else {
-            setIsEditMode(true);
-          }
-        }}
-        variant={isEditMode ? "default" : "outline"}
-        className="aspect-square w-fit flex justify-center items-center"
-        disabled={isSaving}
-        aria-label={isEditMode ? "Save changes" : "Edit cell"}
-      >
-        {isEditMode ? (
-          <CheckIcon className="h-4 w-4" />
-        ) : (
-          <PencilIcon className="h-4 w-4" />
-        )}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          onClick={() => {
+            if (isEditMode) {
+              handleEditComplete();
+            } else {
+              setIsEditMode(true);
+            }
+          }}
+          variant={isEditMode ? "default" : "outline"}
+          className="aspect-square w-fit flex justify-center items-center"
+          disabled={isSaving}
+          aria-label={isEditMode ? "Save changes" : "Edit cell"}
+        >
+          {isSaving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : isEditMode ? (
+            <CheckIcon className="h-4 w-4" />
+          ) : (
+            <PencilIcon className="h-4 w-4" />
+          )}
+        </Button>
+
+        <Button
+          onClick={() => setIsNotesOpen(true)}
+          variant="outline"
+          className="aspect-square w-fit flex justify-center items-center"
+          disabled={isSaving}
+          aria-label="Open notes"
+        >
+          <StickyNoteIcon className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <NotesDialog
+        isOpen={isNotesOpen}
+        onClose={() => setIsNotesOpen(false)}
+        notes={notes}
+        onSave={handleNotesUpdate}
+        isLoading={isSaving}
+      />
     </Card>
   );
 };

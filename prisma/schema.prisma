@@ -60,6 +60,7 @@ model Cell {
   bingo   Bingo   @relation(fields: [bingoId], references: [id], onDelete: Cascade)
   text    String
   max     Int
+  notes   String @default("")
   actual  Int
   checked Boolean
 }

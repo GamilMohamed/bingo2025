@@ -10,7 +10,7 @@ export async function PUT(request: Request) {
   }
 
   const data = await request.json();
-  const { id, text, max, actual, checked } = data;
+  const { id, text, max, actual, checked, notes } = data;
 
   try {
     const updatedCell = await prisma.cell.update({
@@ -19,6 +19,7 @@ export async function PUT(request: Request) {
         text,
         max,
         actual,
+        notes,
         checked,
       },
     });

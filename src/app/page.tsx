@@ -14,6 +14,7 @@ async function createInitialBingo(userId: string) {
             text: `Case ${i + 1}`,
             max: 1,
             actual: 0,
+            notes: "",
             checked: false,
           })),
         },
