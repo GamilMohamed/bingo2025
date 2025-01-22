@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   PencilIcon,
-  CheckIcon,
   Loader2,
   StickyNoteIcon,
   Plus,
   Minus,
   Check,
   X,
+  SaveIcon,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useBingoCell } from "../hooks/useBingoCell";
@@ -34,6 +34,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     isNotesOpen,
     setIsNotesOpen,
     isSaving,
+    isComplete,
     updateCell,
   } = useBingoCell(cell, id);
 
@@ -68,7 +69,9 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
   return (
     <Card
-      className={`aspect-square p-4 relative flex flex-col min-w-40 ${isSaving ? "opacity-70" : ""}`}
+      className={`aspect-square p-4 relative flex flex-col min-w-40 ${isSaving ? "opacity-70" : ""}
+        ${isComplete ? "opacity-20" : ""}
+      `}
     >
       <div className="flex-grow mb-2 justify-center items-center flex">
         {isEditMode ? (
@@ -138,7 +141,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
           {isSaving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : isEditMode ? (
-            <CheckIcon className="h-4 w-4" />
+            <SaveIcon className="h-4 w-4" />
           ) : (
             <PencilIcon className="h-4 w-4" />
           )}
