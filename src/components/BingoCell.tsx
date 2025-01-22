@@ -156,7 +156,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         >
           <StickyNoteIcon className="h-4 w-4" />
         </Button>
-        {max === 1 ? (
+        {max === 1 && !isEditMode ? (
           <Button
             onClick={count !== max ? increment : decrement}
             variant="outline"
@@ -172,7 +172,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
               <Check className="h-4 w-4" />
             )}
           </Button>
-        ) : (
+        ) : ( !isEditMode &&
           <>
             <Button
               onClick={increment}
