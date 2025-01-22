@@ -59,6 +59,6 @@ export const useBingoCell = (initialCell: BingoCell, id: number) => {
     setIsNotesOpen,
     isSaving,
     updateCell,
-    isComplete: count === max
+    isComplete: count >= max
   };
 };

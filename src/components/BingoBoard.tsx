@@ -37,7 +37,7 @@ export async function BingoBoard({ bingo }: { bingo: BingoWithCells }) {
         <h2 className="text-3xl font-bold text-center text-[#9BC6B9]">
           25 CHOSES À FAIRE EN 2025
         </h2>
-        <SwitchTheme />
+        <SwitchTheme/>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
         {cells}

@@ -38,6 +38,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     updateCell,
   } = useBingoCell(cell, id);
 
+
   const increment = () => {
     if (count === max) return;
     const newCount = count + 1;
@@ -46,8 +47,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
   };
 
   const decrement = () => {
-    if (count > max)
-    {
+    if (count > max) {
       setCount(max);
       void updateCell({ actual: max });
     }
@@ -60,6 +60,10 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
   };
 
   const handleEditComplete = () => {
+    if (max < 1)  {
+      setMax(1);
+      void updateCell({ max: 1 });
+    }
     setIsEditMode(false);
     void updateCell({
       text: goal,
@@ -75,8 +79,10 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
   return (
     <Card
-      className={`aspect-square p-4 relative flex flex-col min-w-40 ${isSaving ? "opacity-70" : ""}
-        ${isComplete ? "opacity-20" : ""}
+      className={`aspect-square p-4 relative flex flex-col min-w-40 ${
+        isSaving ? "opacity-70" : ""
+      }
+        ${isComplete && max !== 0 ? "opacity-20" : ""}
       `}
     >
       <div className="flex-grow mb-2 justify-center items-center flex">
@@ -89,7 +95,11 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             aria-label={`Goal for cell ${index + 1}`}
           />
         ) : (
-          <p className={`overflow-auto h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 70 ? "text-xs" : "text-xl"}`}>
+          <p
+            className={`overflow-auto h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${
+              goal.length > 70 ? "text-xs text-bolder" : "text-xl"
+            }`}
+          >
             {goal}
           </p>
         )}
@@ -111,21 +121,23 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             <Input
               type="number"
               value={max}
-              onChange={(e) => setMax(Number(e.target.value) || 1)}
+              onChange={(e) => setMax(Number(e.target.value))}
               className="w-16 text-center"
-              min="1"
               aria-label={`Maximum value for cell ${index + 1}`}
             />
           </>
         ) : (
           <>
-              <div className={`w-full flex gap-2 items-center ${max !== 1 ? "" : "opacity-0"}`}>
-                <Progress 
-                value={(count * 100) / max} max={max} />
-                <p className="text-lg">
-                  {count}/{max}
-                </p>
-              </div>
+            <div
+              className={`w-full flex gap-2 items-center ${
+                max !== 1 ? "" : "opacity-0"
+              }`}
+            >
+              <Progress value={(count * 100) / max} max={max} />
+              <p className="text-lg">
+                {count}/{max}
+              </p>
+            </div>
           </>
         )}
       </div>
@@ -178,35 +190,37 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
               <Check className="h-4 w-4" />
             )}
           </Button>
-        ) : ( !isEditMode &&
-          <>
-            <Button
-              onClick={increment}
-              variant="outline"
-              className="aspect-square w-fit flex justify-center items-center"
-              disabled={isSaving}
-              aria-label="Open notes"
-            >
-              {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Plus className="h-4 w-4" />
-              )}
-            </Button>
-            <Button
-              onClick={decrement}
-              variant="outline"
-              className="aspect-square w-fit flex justify-center items-center"
-              disabled={isSaving}
-              aria-label="Open notes"
-            >
-              {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Minus className="h-4 w-4" />
-              )}
-            </Button>
-          </>
+        ) : (
+          !isEditMode && (
+            <>
+              <Button
+                onClick={increment}
+                variant="outline"
+                className="aspect-square w-fit flex justify-center items-center"
+                disabled={isSaving}
+                aria-label="Open notes"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                onClick={decrement}
+                variant="outline"
+                className="aspect-square w-fit flex justify-center items-center"
+                disabled={isSaving}
+                aria-label="Open notes"
+              >
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Minus className="h-4 w-4" />
+                )}
+              </Button>
+            </>
+          )
         )}
       </div>
 
