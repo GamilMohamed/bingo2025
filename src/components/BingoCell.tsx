@@ -83,7 +83,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             aria-label={`Goal for cell ${index + 1}`}
           />
         ) : (
-          <p className="overflow-auto h-full flex justify-center items-center w-full">
+          <p className="overflow-auto h-full flex justify-center text-center items-center w-full">
             {goal}
           </p>
         )}
