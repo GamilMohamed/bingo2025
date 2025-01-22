@@ -46,6 +46,12 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
   };
 
   const decrement = () => {
+    if (count > max)
+    {
+      setCount(max);
+      void updateCell({ actual: max });
+    }
+
     if (count > 0) {
       const newCount = count - 1;
       setCount(newCount);
@@ -83,7 +89,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             aria-label={`Goal for cell ${index + 1}`}
           />
         ) : (
-          <p className="overflow-auto h-full flex justify-center text-center items-center w-full text-xl">
+          <p className={`overflow-auto h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 70 ? "text-xs" : "text-xl"}`}>
             {goal}
           </p>
         )}
@@ -158,7 +164,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         </Button>
         {max === 1 && !isEditMode ? (
           <Button
-            onClick={count !== max ? increment : decrement}
+            onClick={count < max ? increment : decrement}
             variant="outline"
             className="aspect-square w-fit flex justify-center items-center"
             disabled={isSaving}
