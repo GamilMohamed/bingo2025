@@ -1,13 +1,23 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PencilIcon, CheckIcon, PlusIcon, MinusIcon, Loader2, StickyNoteIcon } from "lucide-react";
+import {
+  PencilIcon,
+  CheckIcon,
+  Loader2,
+  StickyNoteIcon,
+  Plus,
+  Minus,
+  Check,
+  X,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useBingoCell } from "../hooks/useBingoCell";
 import { NotesDialog } from "./NotesDialog";
 import type { BingoCellProps } from "../types";
 import type { FC } from "react";
 import { Textarea } from "./ui/textarea";
+import { Progress } from "./ui/progress";
 
 export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
   const {
@@ -25,10 +35,10 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     setIsNotesOpen,
     isSaving,
     updateCell,
-    isComplete
   } = useBingoCell(cell, id);
 
   const increment = () => {
+    if (count === max) return;
     const newCount = count + 1;
     setCount(newCount);
     void updateCell({ actual: newCount });
@@ -58,9 +68,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
   return (
     <Card
-      className={`aspect-square p-4 relative flex flex-col min-w-40 ${
-        isComplete ? "bg-[#9BC6B9]" : "bg-white"
-      } ${isSaving ? "opacity-70" : ""}`}
+      className={`aspect-square p-4 relative flex flex-col min-w-40 ${isSaving ? "opacity-70" : ""}`}
     >
       <div className="flex-grow mb-2 justify-center items-center flex">
         {isEditMode ? (
@@ -71,14 +79,6 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             className="w-full mb-2 h-full"
             aria-label={`Goal for cell ${index + 1}`}
           />
-          // <Input
-          //   type="text"
-          //   value={goal}
-          //   onChange={(e) => setGoal(e.target.value)}
-          //   placeholder="Enter goal"
-          //   className="w-full mb-2 h-full"
-          //   aria-label={`Goal for cell ${index + 1}`}
-          // />
         ) : (
           <p className="overflow-auto h-full flex justify-center items-center w-full">
             {goal}
@@ -110,67 +110,18 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
           </>
         ) : (
           <>
-            {isComplete ? (
-              ""
-            ) : (
-              <>
-                {max === 1 ? (
-                  <Button
-                    onClick={increment}
-                    disabled={isComplete || isSaving}
-                    size="sm"
-                    variant="outline"
-                    className={`${isComplete ? "none" : "w-fit"}`}
-                  >
-                    {isSaving ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : !isComplete ? (
-                      "✓"
-                    ) : (
-                      ""
-                    )}
-                  </Button>
-                ) : (
-                  <>
-                    <span className="text-lg font-semibold">
-                      {count}/{max}
-                    </span>
-                    <div>
-                      <Button
-                        onClick={decrement}
-                        disabled={count === 0 || isSaving}
-                        size="sm"
-                        variant="outline"
-                        className="mr-2"
-                      >
-                        {isSaving ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <MinusIcon className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        onClick={increment}
-                        disabled={isComplete || isSaving}
-                        size="sm"
-                        variant="outline"
-                      >
-                        {isSaving ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <PlusIcon className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
+              <div className={`w-full flex gap-2 items-center ${max !== 1 ? "" : "opacity-0"}`}>
+                <Progress 
+                value={(count * 100) / max} max={max} />
+                <p className="text-lg">
+                  {count}/{max}
+                </p>
+              </div>
           </>
         )}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-around">
         <Button
           onClick={() => {
             if (isEditMode) {
@@ -202,6 +153,52 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         >
           <StickyNoteIcon className="h-4 w-4" />
         </Button>
+        {max === 1 ? (
+          <Button
+            onClick={count !== max ? increment : decrement}
+            variant="outline"
+            className="aspect-square w-fit flex justify-center items-center"
+            disabled={isSaving}
+            aria-label="Open notes"
+          >
+            {isSaving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : count === max ? (
+              <X className="h-4 w-4" />
+            ) : (
+              <Check className="h-4 w-4" />
+            )}
+          </Button>
+        ) : (
+          <>
+            <Button
+              onClick={increment}
+              variant="outline"
+              className="aspect-square w-fit flex justify-center items-center"
+              disabled={isSaving}
+              aria-label="Open notes"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              onClick={decrement}
+              variant="outline"
+              className="aspect-square w-fit flex justify-center items-center"
+              disabled={isSaving}
+              aria-label="Open notes"
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Minus className="h-4 w-4" />
+              )}
+            </Button>
+          </>
+        )}
       </div>
 
       <NotesDialog

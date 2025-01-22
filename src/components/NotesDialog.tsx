@@ -30,7 +30,7 @@ export const NotesDialog: React.FC<NotesDialogProps> = ({
           <Textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Add your notes here..."
+            placeholder="Noms de films regardés, livres lus, visites de musées, etc."
             className="min-h-[200px]"
           />
         </div>
