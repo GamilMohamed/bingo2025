@@ -149,7 +149,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
         <Button
           onClick={() => setIsNotesOpen(true)}
-          variant="outline"
+          variant={notes ? "default" : "outline"}
           className="aspect-square w-fit flex justify-center items-center"
           disabled={isSaving}
           aria-label="Open notes"

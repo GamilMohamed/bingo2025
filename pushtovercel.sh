@@ -6,8 +6,8 @@ if [ -z "$1" ]
 	exit 1
 fi
 
-read -p "Are you sure you want to push to Vercel? (y/n) " -n 1 -r
-
+read -p "Are you sure you want to push to Vercel? (y/n) " -n 1
+echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 	echo "Pushing to Vercel"
