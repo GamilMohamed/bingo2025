@@ -40,7 +40,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
 
   const increment = () => {
-    if (count === max) return;
+    // if (count === max) return;
     const newCount = count + 1;
     setCount(newCount);
     void updateCell({ actual: newCount });
@@ -82,10 +82,9 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
       className={`aspect-square p-4 relative flex flex-col min-w-40 ${
         isSaving ? "opacity-70" : ""
       }
-        ${isComplete && max !== 0 ? "opacity-20" : ""}
       `}
     >
-      <div className="flex-grow mb-2 justify-center items-center flex">
+      <div className={`flex-grow mb-2 justify-center items-center flex ${isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""}`}>
         {isEditMode ? (
           <Textarea
             value={goal}
@@ -114,7 +113,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
               onChange={(e) => setCount(Number(e.target.value) || 0)}
               className="w-16 text-center"
               min="0"
-              max={max}
+              // max={max}
               aria-label={`Current value for cell ${index + 1}`}
             />
             <span>/</span>
@@ -196,7 +195,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
               <Button
                 onClick={increment}
                 variant="outline"
-                className="aspect-square w-fit flex justify-center items-center"
+                className="aspect-square w-fit flex justify-center items-center "
                 disabled={isSaving}
                 aria-label="Open notes"
               >

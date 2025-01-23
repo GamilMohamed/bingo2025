@@ -31,6 +31,7 @@ async function createInitialBingo(userId: string) {
 }
 
 export default async function Home() {
+  let isfirstime = false;
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth/signin");
 
@@ -44,12 +45,13 @@ export default async function Home() {
   });
 
   if (!bingo) {
+    isfirstime = true;
     bingo = await createInitialBingo(session.user.id);
   }
 
   return (
     <main>
-      <BingoBoard bingo={bingo} />
+      <BingoBoard bingo={bingo} isfirsttime={isfirstime} />
     </main>
   );
 }

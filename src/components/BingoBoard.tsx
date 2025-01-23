@@ -7,8 +7,9 @@ import { Button } from "./ui/button";
 import { LogOutIcon } from "lucide-react";
 import { BingoWithCells } from "@/lib/prisma";
 import SwitchTheme from "./SwitchTheme";
+import { HelpButton } from "./HelpButton";
 
-export async function BingoBoard({ bingo }: { bingo: BingoWithCells }) {
+export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells, isfirsttime: boolean }) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return null;
@@ -18,6 +19,7 @@ export async function BingoBoard({ bingo }: { bingo: BingoWithCells }) {
     <BingoCell key={i} index={i} id={bingo.cells[i].id} cell={bingo.cells[i]} />
   ));
 
+
   const username = session.user?.name.split(" ")[0];
   const title =
     "BINGO d" +
@@ -25,11 +27,14 @@ export async function BingoBoard({ bingo }: { bingo: BingoWithCells }) {
     username;
   return (
     <div className="container mx-auto px-4 py-8 z-1">
-      <form method="post" action="/api/auth/signout">
-        <Button className="bottom-5 z-50 right-5 fixed" type="submit">
-          <LogOutIcon />
-        </Button>
-      </form>
+      <div className="bottom-5 z-50 right-5 fixed">
+        <HelpButton isFirstTime={isfirsttime}  />
+        <form method="post" action="/api/auth/signout">
+          <Button type="submit">
+            <LogOutIcon />
+          </Button>
+        </form>
+      </div>
       <h1 className="text-6xl font-bold text-center mb-4 text-[#9BC6B9]">
         {title}
       </h1>
@@ -37,7 +42,7 @@ export async function BingoBoard({ bingo }: { bingo: BingoWithCells }) {
         <h2 className="text-3xl font-bold text-center text-[#9BC6B9]">
           25 CHOSES À FAIRE EN 2025
         </h2>
-        <SwitchTheme/>
+        <SwitchTheme />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
         {cells}
