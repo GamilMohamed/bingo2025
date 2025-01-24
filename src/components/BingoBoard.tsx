@@ -20,7 +20,9 @@ export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells
   ));
 
 
-  const username = session.user?.name.split(" ")[0];
+  let username = session.user?.name.split(" ")[0];
+  username = username[0].toUpperCase() + username.slice(1);
+
   const title =
     "BINGO d" +
     ("aeiouy".includes(username[0].toLowerCase()) ? "'" : "e ") +
