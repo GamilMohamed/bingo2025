@@ -3,6 +3,9 @@ import { getShareById } from '@/lib/prismashare'
 import { SharedCell } from '@/components/SharedCell';
 import SwitchTheme from '@/components/SwitchTheme';
 import { BingoCell } from '@/types';
+import HomeButton from '@/components/HomeButton';
+import { Button } from '@/components/ui/button';
+import { LogOutIcon } from 'lucide-react';
 
 export default async function SharePage({
   params,
@@ -42,9 +45,17 @@ export default async function SharePage({
 
   return (
     <div className="container mx-auto px-4 py-8 z-1">
-
+      <div className="bottom-5 z-50 right-5 fixed flex-col flex justify-center items-center">
+        <HomeButton />
+        <form method="post" action="/api/auth/signout">
+          <Button type="submit">
+            <LogOutIcon />
+          </Button>
+        </form>
+      </div>
       <div className="p-6 text-center">
-        <h1 className="text-6xl font-bold text-center mb-4 text-[#9BC6B9]">
+        <h1 
+        className="text-6xl font-bold text-center mb-4 text-[#9BC6B9]">
           {title}
         </h1>
         <div className="flex justify-center items-center mb-4">
