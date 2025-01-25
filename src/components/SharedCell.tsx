@@ -79,7 +79,7 @@ export const SharedCell: FC<SharedCellProps> = ({ id, cell }) => {
 		>
 			<div className={`flex-grow mb-2 justify-center items-center flex ${isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""}`}>
 				<p className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 55 ? "text-md " : "text-xl"}`}>
-					{goal} hehe {isPrivate ? "private" : "public"}
+					{goal}
 				</p>
 			</div>
 			<div className="flex justify-between items-center mb-2">

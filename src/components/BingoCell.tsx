@@ -101,7 +101,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 55 ? "text-md " : "text-xl"
               }`}
           >
-            {goal} hehe {isPrivate ? "private" : "public"}
+            {goal}
           </p>
         )}
       </div>
