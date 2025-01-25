@@ -18,6 +18,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   bingo         Bingo?    @relation("UserToBingo")
+  shares        Share[]
 }
 
 model Account {
@@ -55,12 +56,23 @@ model Bingo {
 }
 
 model Cell {
-  id      Int  @id @default(autoincrement())
-  bingoId String
-  bingo   Bingo   @relation(fields: [bingoId], references: [id], onDelete: Cascade)
-  text    String
-  max     Int
-  notes   String @default("")
-  actual  Int
-  checked Boolean
+  id          Int      @id @default(autoincrement())
+  bingoId     String
+  bingo       Bingo    @relation(fields: [bingoId], references: [id], onDelete: Cascade)
+  text        String
+  max         Int
+  notes       String   @default("")
+  actual      Int
+  checked     Boolean
+  isPrivate   Boolean  @default(true)
+}
+
+model Share {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  isActive    Boolean   @default(true)
 }

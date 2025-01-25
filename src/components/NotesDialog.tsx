@@ -46,7 +46,7 @@ export const NotesDialog: React.FC<NotesDialogProps> = ({
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Chargement...
             </>
-          ) : "Sauvagarder"}
+          ) : "Sauvegarder"}
         </Button>
       </DialogContent>
     </Dialog>

@@ -15,9 +15,9 @@ export function HelpButton({ isFirstTime = false }: { isFirstTime?: boolean }) {
 			</Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-[95%] max-w-[425px] mx-auto p-4">
+        <DialogContent className="w-[95%] max-w-[425px] mx-auto p-4 rounded-xl">
           <DialogHeader>
-            <DialogTitle className="text-lg md:text-l">
+            <DialogTitle className="text-lg md:text-xl">
               Explications
             </DialogTitle>
           </DialogHeader>

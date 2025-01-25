@@ -16,6 +16,7 @@ async function createInitialBingo(userId: string) {
             actual: 0,
             notes: "",
             checked: false,
+            private: true,
           })),
         },
       },

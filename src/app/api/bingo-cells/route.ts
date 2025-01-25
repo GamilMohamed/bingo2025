@@ -8,10 +8,9 @@ export async function PUT(request: Request) {
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   }
-
   const data = await request.json();
-  const { id, text, max, actual, checked, notes } = data;
-
+  const { id, text, max, actual, checked, notes, isPrivate } = data;
+  console.log(`with text: ${text}, max: ${max}, actual: ${actual}, checked: ${checked}, notes: ${notes}, isPrivate: ${isPrivate}`);
   try {
     const updatedCell = await prisma.cell.update({
       where: { id },
@@ -21,6 +20,7 @@ export async function PUT(request: Request) {
         actual,
         notes,
         checked,
+        isPrivate,
       },
     });
     

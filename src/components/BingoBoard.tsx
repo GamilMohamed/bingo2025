@@ -8,6 +8,7 @@ import { LogOutIcon } from "lucide-react";
 import { BingoWithCells } from "@/lib/prisma";
 import SwitchTheme from "./SwitchTheme";
 import { HelpButton } from "./HelpButton";
+import ShareButton from "./ShareButton";
 
 export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells, isfirsttime: boolean }) {
   const session = await getServerSession(authOptions);
@@ -29,8 +30,9 @@ export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells
     username;
   return (
     <div className="container mx-auto px-4 py-8 z-1">
-      <div className="bottom-5 z-50 right-5 fixed">
+      <div className="bottom-5 z-50 right-5 fixed flex-col flex justify-center items-center">
         <HelpButton isFirstTime={isfirsttime}  />
+        <ShareButton userId={session.user.id} content={bingo.id} />
         <form method="post" action="/api/auth/signout">
           <Button type="submit">
             <LogOutIcon />
