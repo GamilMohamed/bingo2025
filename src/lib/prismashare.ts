@@ -24,6 +24,11 @@ export async function getShareById(shareId: string) {
     }
   })
 
+  if (!share) {
+    return null
+  }
+
+
   // get user by share.userId
   const user = await prisma.user.findUnique({
     where: {

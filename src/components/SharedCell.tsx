@@ -68,7 +68,6 @@ export const SharedCell: FC<SharedCellProps> = ({ id, cell }) => {
 		setIsNotesOpen,
 		isSaving,
 		isComplete,
-		isPrivate,
 	} = useBingoCell(cell, id);
 
 	return (
