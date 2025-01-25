@@ -73,46 +73,35 @@ export const SharedCell: FC<SharedCellProps> = ({ id, cell }) => {
 
 	return (
 		<Card
-			className={`aspect-square p-4 relative flex flex-col min-w-40 ${isSaving ? "opacity-70" : ""
+			className={`aspect-square p-4 relative flex flex-col min-w-56 ${isComplete ? "opacity-70" : ""
 				}
       `}
 		>
 			<div className={`flex-grow mb-2 justify-center items-center flex ${isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""}`}>
-				<p
-					className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 55 ? "text-md " : "text-xl"
-						}`}
-				>
+				<p className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 55 ? "text-md " : "text-xl"}`}>
 					{goal} hehe {isPrivate ? "private" : "public"}
 				</p>
 			</div>
-
 			<div className="flex justify-between items-center mb-2">
-
-				<>
-					<div
-						className={`w-full flex gap-2 items-center ${max !== 1 ? "" : "opacity-0"
-							}`}
-					>
+					<div className={`w-full flex gap-2 items-center ${max !== 1 ? "" : "opacity-0"}`}>
 						<Progress value={(count * 100) / max} max={max} />
 						<p className="text-lg">
 							{count}/{max}
 						</p>
 					</div>
-				</>
 			</div>
-
-			<div className="flex gap-2 justify-around">
-				<Button
-					onClick={() => setIsNotesOpen(true)}
-					variant={notes ? "default" : "outline"}
-					className="aspect-square w-fit flex justify-center items-center"
-					disabled={isSaving}
-					aria-label="Open notes"
-				>
-					<StickyNoteIcon className="h-4 w-4" />
-				</Button>
-			</div>
-
+			{notes &&
+				<div className="flex gap-2 justify-around">
+					<Button
+						onClick={() => setIsNotesOpen(true)}
+						variant={notes ? "default" : "outline"}
+						className="aspect-square w-fit flex justify-center items-center"
+						disabled={isSaving}
+						aria-label="Open notes">
+						<StickyNoteIcon className="h-4 w-4" />
+					</Button>
+				</div>
+			}
 			<NotesDialog
 				isOpen={isNotesOpen}
 				onClose={() => setIsNotesOpen(false)}

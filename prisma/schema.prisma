@@ -64,7 +64,7 @@ model Cell {
   notes       String   @default("")
   actual      Int
   checked     Boolean
-  isPrivate   Boolean  @default(true)
+  isPrivate   Boolean  @default(false)
 }
 
 model Share {

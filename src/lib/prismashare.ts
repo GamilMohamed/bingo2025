@@ -52,8 +52,11 @@ export async function getShareById(shareId: string) {
   if (!user.bingo) {
     return null
   }
-
-  return user?.bingo.cells
+// return cells and username
+  return {
+    cells: user.bingo.cells,
+    name: user.name
+  }
 }
 
 export async function deactivateExpiredShares() {

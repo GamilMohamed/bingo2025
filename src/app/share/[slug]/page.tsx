@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
 import { getShareById } from '@/lib/prismashare'
 import { SharedCell } from '@/components/SharedCell';
+import SwitchTheme from '@/components/SwitchTheme';
+import { BingoCell } from '@/types';
 
 export default async function SharePage({
   params,
@@ -19,20 +21,44 @@ export default async function SharePage({
   const sp = await searchParams;
   console.log(slug);
   console.log(sp);
-  const cells = await getShareById(slug as unknown as string);
+  const share = await getShareById(slug as unknown as string);
+  if (!share) {
+    notFound();
+  }
+  const { cells, name } = share;
 
-  if (!cells) {
+  if (!cells || !name) {
     notFound()
   }
+  let username = name.split(" ")[0];
+  username = username[0].toUpperCase() + username.slice(1);
+
+
+
+  const title =
+    "Le BINGO d" +
+    ("aeiouy".includes(username[0].toLowerCase()) ? "'" : "e ") +
+    username;
 
   return (
-    <div className="p-6 text-center">
-      <h1 className="text-2xl font-bold">Le bingo de qqun d;autre</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+    <div className="container mx-auto px-4 py-8 z-1">
 
-        {cells.map((cell) => (
-          <SharedCell key={cell.id} id={cell.id} cell={cell} />
-        ))}
+      <div className="p-6 text-center">
+        <h1 className="text-6xl font-bold text-center mb-4 text-[#9BC6B9]">
+          {title}
+        </h1>
+        <div className="flex justify-center items-center mb-4">
+          <h2 className="text-3xl font-bold text-center text-[#9BC6B9]">
+            SES {cells.length} CHOSES À FAIRE EN 2025
+          </h2>
+          <SwitchTheme />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4 ">
+
+          {cells.map((cell: BingoCell & { id: number }) => (
+            <SharedCell key={cell.id} id={cell.id} cell={cell} />
+          ))}
+        </div>
       </div>
     </div>
   )
