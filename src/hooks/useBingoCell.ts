@@ -19,6 +19,7 @@ export const useBingoCell = (initialCell: BingoCell, id: number) => {
 
 
   const deleteCell = async () => {
+    setIsSaving(true);
     if (!session) return;
     try {
       const response = await fetch("/api/bingo-cells", {
@@ -37,6 +38,8 @@ export const useBingoCell = (initialCell: BingoCell, id: number) => {
       // router.push("/");
     } catch (error) {
       console.error("Error deleting cell:", error);
+    } finally {
+      setIsSaving(false);
     }
   }
   // alert(`Initial cell: ${initialCell.text}: ${initialCell.private}`);
