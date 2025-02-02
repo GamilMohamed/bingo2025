@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import type { BingoCell } from "../types";
+// import { useRouter } from "next/navigation";
 
 export const useBingoCell = (initialCell: BingoCell, id: number) => {
   const { data: session } = useSession();
@@ -13,7 +14,31 @@ export const useBingoCell = (initialCell: BingoCell, id: number) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  // const router = useRouter();
 
+
+  const deleteCell = async () => {
+    if (!session) return;
+    try {
+      const response = await fetch("/api/bingo-cells", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete cell");
+      }
+      setIsDeleted(true);
+      // router.push("/");
+    } catch (error) {
+      console.error("Error deleting cell:", error);
+    }
+  }
   // alert(`Initial cell: ${initialCell.text}: ${initialCell.private}`);
   const updateCell = async (updates: Partial<BingoCell>) => {
     if (!session) return;
@@ -64,6 +89,8 @@ export const useBingoCell = (initialCell: BingoCell, id: number) => {
     isPrivate,
     setIsPrivate,
     updateCell,
-    isComplete: count >= max
+    isComplete: count >= max,
+    deleteCell,
+    isDeleted,
   };
 };

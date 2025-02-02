@@ -12,6 +12,7 @@ import {
   SaveIcon,
   Eye,
   EyeOff,
+  TrashIcon,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useBingoCell } from "../hooks/useBingoCell";
@@ -39,9 +40,10 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
     isComplete,
     updateCell,
     isPrivate,
-    setIsPrivate
+    setIsPrivate,
+    deleteCell,
+    isDeleted,
   } = useBingoCell(cell, id);
-
 
   const increment = () => {
     // if (count === max) return;
@@ -83,11 +85,17 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
   return (
     <Card
-      className={`aspect-square p-4 relative flex flex-col min-w-40 ${isSaving ? "opacity-70" : ""
-        }
+      className={`aspect-square p-4 relative flex flex-col min-w-40 ${
+        isSaving ? "opacity-70" : ""
+      }
+      ${isDeleted ? "hidden" : ""}
       `}
     >
-      <div className={`flex-grow mb-2 justify-center items-center flex ${isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""}`}>
+      <div
+        className={`flex-grow mb-2 justify-center items-center flex ${
+          isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""
+        }`}
+      >
         {isEditMode ? (
           <Textarea
             value={goal}
@@ -98,8 +106,9 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
           />
         ) : (
           <p
-            className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 55 ? "text-md " : "text-xl"
-              }`}
+            className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${
+              goal.length > 55 ? "text-md " : "text-xl"
+            }`}
           >
             {goal}
           </p>
@@ -130,8 +139,9 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         ) : (
           <>
             <div
-              className={`w-full flex gap-2 items-center ${max !== 1 ? "" : "opacity-0"
-                }`}
+              className={`w-full flex gap-2 items-center ${
+                max !== 1 ? "" : "opacity-0"
+              }`}
             >
               <Progress value={(count * 100) / max} max={max} />
               <p className="text-lg">
@@ -174,21 +184,34 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         >
           <StickyNoteIcon className="h-4 w-4" />
         </Button>
-        {
-          !isEditMode &&
+        {isEditMode && (
           <Button
-            className="absolute top-1 right-1"
+          variant="destructive"
             disabled={isSaving}
-            aria-label="Open notes"
+            aria-label="Delete cell"
             onClick={() => {
-              setIsPrivate(!isPrivate);
-              updateCell({ isPrivate: !isPrivate });
+              deleteCell();
             }}
-            variant={null}
           >
-            {isPrivate ? <EyeOff size={20} /> : <Eye size={20} />}
+            <TrashIcon className="h-4 w-4" />
           </Button>
-        }
+        )}
+        {!isEditMode && (
+          <>
+            <Button
+              className="absolute top-1 right-1"
+              disabled={isSaving}
+              aria-label="Open notes"
+              onClick={() => {
+                setIsPrivate(!isPrivate);
+                updateCell({ isPrivate: !isPrivate });
+              }}
+              variant={null}
+            >
+              {isPrivate ? <EyeOff size={20} /> : <Eye size={20} />}
+            </Button>
+          </>
+        )}
         {max === 1 && !isEditMode ? (
           <Button
             onClick={count < max ? increment : decrement}

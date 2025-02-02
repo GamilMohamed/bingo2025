@@ -11,6 +11,7 @@ export interface BingoCellProps {
   index: number;
   id: number;
   cell: BingoCell;
+
 }
 export interface SharedCellProps {
   id: number;

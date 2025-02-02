@@ -1,3 +1,4 @@
+// BingoBoard.tsx
 "use server";
 import type React from "react";
 import { BingoCell } from "./BingoCell";
@@ -9,6 +10,7 @@ import { BingoWithCells } from "@/lib/prisma";
 import SwitchTheme from "./SwitchTheme";
 import { HelpButton } from "./HelpButton";
 import ShareButton from "./ShareButton";
+import { AddCell } from "./AddCell";
 
 export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells, isfirsttime: boolean }) {
   const session = await getServerSession(authOptions);
@@ -16,10 +18,9 @@ export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells
     return null;
   }
 
-  const cells = Array.from({ length: 25 }, (_, i) => (
+  const cells = Array.from({ length: bingo.cells.length }, (_, i) => (
     <BingoCell key={i} index={i} id={bingo.cells[i].id} cell={bingo.cells[i]} />
   ));
-
 
   let username = session.user?.name.split(" ")[0];
   username = username[0].toUpperCase() + username.slice(1);
@@ -28,11 +29,13 @@ export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells
     "BINGO d" +
     ("aeiouy".includes(username[0].toLowerCase()) ? "'" : "e ") +
     username;
+
   return (
     <div className="container mx-auto px-4 py-8 z-1">
-      <div className="bottom-5 z-50 right-5 fixed flex-col flex justify-center items-center">
-        <HelpButton isFirstTime={isfirsttime}  />
+      <div className="bottom-5 z-50 right-5 fixed flex-col flex justify-center items-center gap-2">
+        <HelpButton isFirstTime={isfirsttime} />
         <ShareButton userId={session.user.id} content={bingo.id} />
+        <AddCell />
         <form method="post" action="/api/auth/signout">
           <Button type="submit">
             <LogOutIcon />
@@ -48,7 +51,7 @@ export async function BingoBoard({ bingo, isfirsttime }: { bingo: BingoWithCells
         </h2>
         <SwitchTheme />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4" id="bingo-grid">
         {cells}
       </div>
     </div>

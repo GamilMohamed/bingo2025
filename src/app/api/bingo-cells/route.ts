@@ -29,3 +29,61 @@ export async function PUT(request: Request) {
     return new Response("Error updating cell" + (error instanceof Error ? error.message : ""), { status: 500 });
   }
 }
+
+export async function POST() {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  const bingo = await prisma.bingo.findFirst({
+    where: { userId: session.user.id },
+  });
+
+  if (!bingo) {
+    return new Response("No bingo found", { status: 404 });
+  }
+
+  const text = "New !";
+  const max = 1;
+  const actual = 0;
+  const checked = false;
+  const notes = "";
+  const isPrivate = false;
+  const bingoId = bingo.id;
+  try {
+    const newCell = await prisma.cell.create({
+      data: {
+        text,
+        max,
+        actual,
+        notes,
+        checked,
+        isPrivate,
+        bingo: { connect: { id: bingoId } },
+      },
+    });
+    return Response.json(newCell);
+    // return Response.json(newCell);
+  } catch (error) {
+    return new Response("Error creating cell" + (error instanceof Error ? error.message : ""), { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  const data = await request.json();
+  const { id } = data;
+  try {
+    await prisma.cell.delete({
+      where: { id },
+    });
+    return new Response("Cell deleted", { status: 200 });
+  } catch (error) {
+    return new Response("Error deleting cell" + (error instanceof Error ? error.message : ""), { status: 500 });
+  }
+}
