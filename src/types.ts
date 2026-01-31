@@ -11,7 +11,7 @@ export interface BingoCellProps {
   index: number;
   id: number;
   cell: BingoCell;
-
+  animate?: boolean;
 }
 export interface SharedCellProps {
   id: number;

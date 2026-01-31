@@ -72,9 +72,10 @@ export const SharedCell: FC<SharedCellProps> = ({ id, cell }) => {
 
 	return (
 		<Card
-			className={`aspect-square p-4 relative flex flex-col min-w-56 ${isComplete ? "opacity-70" : ""
-				}
-      `}
+			className={`aspect-square p-4 relative flex flex-col min-w-56
+				transition-all duration-300
+				${isComplete ? "opacity-70 border-primary/50" : ""}
+			`}
 		>
 			<div className={`flex-grow mb-2 justify-center items-center flex ${isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""}`}>
 				<p className={`overflow-md h-full flex justify-center text-center items-center w-full leading-7 [&:not(:first-child)]:mt-6 ${goal.length > 55 ? "text-md " : "text-xl"}`}>

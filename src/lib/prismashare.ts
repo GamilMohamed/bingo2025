@@ -28,39 +28,25 @@ export async function getShareById(shareId: string) {
     return null
   }
 
-
-  // get user by share.userId
-  const user = await prisma.user.findUnique({
-    where: {
-      id: share?.userId
-    },
+  const bingo = await prisma.bingo.findUnique({
+    where: { id: share.content },
     include: {
-      bingo: {
-        include: {
-          cells: {
-            orderBy: {
-              id: 'asc'
-            },
-            where: {
-              isPrivate: false
-            }
-          }
-        }
-      }
+      cells: {
+        orderBy: { id: 'asc' },
+        where: { isPrivate: false }
+      },
+      user: true
     }
   })
 
-  if (!user) {
+  if (!bingo || !bingo.user) {
     return null
   }
 
-  if (!user.bingo) {
-    return null
-  }
-// return cells and username
   return {
-    cells: user.bingo.cells,
-    name: user.name
+    cells: bingo.cells,
+    name: bingo.user.name,
+    year: bingo.year
   }
 }
 

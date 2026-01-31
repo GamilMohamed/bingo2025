@@ -2,12 +2,13 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { BingoBoard } from "@/components/BingoBoard";
+import BingoBoardClient from "@/components/BingoBoardClient";
 
-async function createInitialBingo(userId: string) {
+async function createInitialBingo(userId: string, year: number) {
   const bingo = await prisma.bingo.create({
     data: {
       user: { connect: { id: userId } },
+      year,
       cells: {
         createMany: {
           data: Array.from({ length: 25 }, (_, i) => ({
@@ -31,13 +32,20 @@ async function createInitialBingo(userId: string) {
   return bingo;
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ year?: string }>;
+}) {
   let isfirstime = false;
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth/signin");
 
+  const sp = await searchParams;
+  const year = sp.year ? parseInt(sp.year) : new Date().getFullYear();
+
   let bingo = await prisma.bingo.findUnique({
-    where: { userId: session.user.id },
+    where: { userId_year: { userId: session.user.id, year } },
     include: {
       cells: {
         orderBy: { id: 'asc' },
@@ -47,12 +55,21 @@ export default async function Home() {
 
   if (!bingo) {
     isfirstime = true;
-    bingo = await createInitialBingo(session.user.id);
+    bingo = await createInitialBingo(session.user.id, year);
   }
+
+  const availableYears = Array.from({ length: new Date().getFullYear() - 2024 }, (_, i) => 2025 + i);
 
   return (
     <main>
-      <BingoBoard bingo={bingo} isfirsttime={isfirstime} />
+      <BingoBoardClient
+        initialBingo={bingo}
+        initialYear={year}
+        userId={session.user.id}
+        userName={session.user.name || ""}
+        isfirsttime={isfirstime}
+        availableYears={availableYears}
+      />
     </main>
   );
 }

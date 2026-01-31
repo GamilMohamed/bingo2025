@@ -30,14 +30,16 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const bingo = await prisma.bingo.findFirst({
-    where: { userId: session.user.id },
+  const data = await request.json();
+  const year = data.year || new Date().getFullYear();
+  const bingo = await prisma.bingo.findUnique({
+    where: { userId_year: { userId: session.user.id, year } },
   });
 
   if (!bingo) {

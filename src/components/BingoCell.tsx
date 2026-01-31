@@ -22,7 +22,7 @@ import { type FC } from "react";
 import { Textarea } from "./ui/textarea";
 import { Progress } from "./ui/progress";
 
-export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
+export const BingoCell: FC<BingoCellProps> = ({ index, id, cell, animate = false }) => {
   const {
     goal,
     setGoal,
@@ -85,14 +85,18 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
 
   return (
     <Card
-      className={`aspect-square p-4 relative flex flex-col min-w-40 ${
-        isSaving ? "opacity-70" : ""
-      }
-      ${isDeleted ? "hidden" : ""}
+      className={`aspect-square p-4 relative flex flex-col min-w-40
+        transition-all duration-300 ease-out
+        hover:shadow-md hover:-translate-y-1
+        ${isSaving ? "opacity-70" : ""}
+        ${isDeleted ? "hidden" : ""}
+        ${isComplete && max !== 0 && !isEditMode ? "border-primary/50" : ""}
+        ${animate ? "card-enter" : ""}
       `}
+      style={animate ? { animationDelay: `${index * 50}ms` } : undefined}
     >
       <div
-        className={`flex-grow mb-2 justify-center items-center flex ${
+        className={`flex-grow mb-2 justify-center items-center flex transition-opacity duration-300 ${
           isComplete && max !== 0 && !isEditMode ? "opacity-20" : ""
         }`}
       >
@@ -162,7 +166,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
             }
           }}
           variant={isEditMode ? "default" : "outline"}
-          className="aspect-square w-fit flex justify-center items-center"
+          className="aspect-square w-fit flex justify-center items-center active:scale-95"
           disabled={isSaving}
           aria-label={isEditMode ? "Save changes" : "Edit cell"}
         >
@@ -178,7 +182,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         <Button
           onClick={() => setIsNotesOpen(true)}
           variant={notes ? "default" : "outline"}
-          className="aspect-square w-fit flex justify-center items-center"
+          className="aspect-square w-fit flex justify-center items-center active:scale-95"
           disabled={isSaving}
           aria-label="Open notes"
         >
@@ -187,6 +191,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         {isEditMode && (
           <Button
           variant="destructive"
+            className="active:scale-95"
             disabled={isSaving}
             aria-label="Delete cell"
             onClick={() => {
@@ -199,7 +204,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
         {!isEditMode && (
           <>
             <Button
-              className="absolute top-1 right-1"
+              className="absolute top-1 right-1 active:scale-95"
               disabled={isSaving}
               aria-label="Open notes"
               onClick={() => {
@@ -216,7 +221,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
           <Button
             onClick={count < max ? increment : decrement}
             variant="outline"
-            className="aspect-square w-fit flex justify-center items-center"
+            className="aspect-square w-fit flex justify-center items-center active:scale-95"
             disabled={isSaving}
             aria-label="Open notes"
           >
@@ -234,7 +239,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
               <Button
                 onClick={increment}
                 variant="outline"
-                className="aspect-square w-fit flex justify-center items-center "
+                className="aspect-square w-fit flex justify-center items-center active:scale-95"
                 disabled={isSaving}
                 aria-label="Open notes"
               >
@@ -247,7 +252,7 @@ export const BingoCell: FC<BingoCellProps> = ({ index, id, cell }) => {
               <Button
                 onClick={decrement}
                 variant="outline"
-                className="aspect-square w-fit flex justify-center items-center"
+                className="aspect-square w-fit flex justify-center items-center active:scale-95"
                 disabled={isSaving}
                 aria-label="Open notes"
               >

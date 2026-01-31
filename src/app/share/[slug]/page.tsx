@@ -28,7 +28,7 @@ export default async function SharePage({
   if (!share) {
     notFound();
   }
-  const { cells, name } = share;
+  const { cells, name, year } = share;
 
   if (!cells || !name) {
     notFound()
@@ -55,12 +55,12 @@ export default async function SharePage({
       </div>
       <div className="p-6 text-center">
         <h1 
-        className="text-6xl font-bold text-center mb-4 text-[#9BC6B9]">
+        className="text-6xl font-bold text-center mb-4 text-primary">
           {title}
         </h1>
         <div className="flex justify-center items-center mb-4">
-          <h2 className="text-3xl font-bold text-center text-[#9BC6B9]">
-            SES {cells.length} CHOSES À FAIRE EN 2025
+          <h2 className="text-3xl font-bold text-center text-primary">
+            SES {cells.length} CHOSES À FAIRE EN {year}
           </h2>
           <SwitchTheme />
         </div>

@@ -1,10 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
 
-export function AddCell() {
-	const router = useRouter();
+export function AddCell({ year, onCellAdded }: { year: number; onCellAdded: () => Promise<void> }) {
 	const addCell = async () => {
 		try {
 			const response = await fetch(`/api/bingo-cells`, {
@@ -12,11 +10,12 @@ export function AddCell() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
+				body: JSON.stringify({ year }),
 			});
 			if (!response.ok) {
 				throw new Error('Failed to add cell');
 			}
-			router.push("/");
+			await onCellAdded();
 		}
 		catch (error) {
 			console.error('Error adding cell:', error);

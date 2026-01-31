@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { useState } from "react";
 import { StickyNoteIcon, Plus, Minus, Check, X, SaveIcon } from "lucide-react";
 
-export function HelpButton({ isFirstTime = false }: { isFirstTime?: boolean }) {
+export function HelpButton({ isFirstTime = false, year }: { isFirstTime?: boolean; year: number }) {
   const [isOpen, setIsOpen] = useState(isFirstTime);
 
   return (
@@ -24,14 +24,14 @@ export function HelpButton({ isFirstTime = false }: { isFirstTime?: boolean }) {
 
           <div className="space-y-4">
             <p className="text-sm md:text-base">
-              <b>Bingo 2025</b> aide à atteindre et retenir des objectifs en
-              2025 avec une grille de <b>25</b> cases. Chaque case représente un
+              <b>Bingo {year}</b> aide à atteindre et retenir des objectifs en
+              {year} avec une grille de cases. Chaque case représente un
               objectif à accomplir, permettant de suivre les progrès et de
               rester motivé.
               <br />
               L&apos;idéal est de <b>quantifier</b> chaque objectif pour pouvoir
               suivre les progrès. Par exemple, si vous souhaitez lire 10 livres
-              en 2025, vous pouvez indiquer 10 dans la case correspondante.{" "}
+              en {year}, vous pouvez indiquer 10 dans la case correspondante.{" "}
               <br />
               Vous pourrez ensuite incrémenter le compteur à chaque livre lu et
               noter le titre du livre dans les notes.
